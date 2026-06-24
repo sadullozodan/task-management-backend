@@ -11,6 +11,26 @@ jobs:
     name: lint · typecheck · build · test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: '12345'
+          POSTGRES_DB: taskmgmt
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d taskmgmt"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:12345@localhost:5432/taskmgmt?schema=public
+      JWT_ACCESS_SECRET: ci-access-secret-at-least-32-chars-long
+      JWT_REFRESH_SECRET: ci-refresh-secret-at-least-32-chars-long
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,9 +42,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Generate the Prisma client so @prisma/client types exist for tsc/build.
       - name: Generate Prisma client
         run: npm run prisma:generate
+
+      - name: Apply migrations
+        run: npx prisma migrate deploy
 
       - name: Lint (ESLint + Prettier)
         run: npm run lint

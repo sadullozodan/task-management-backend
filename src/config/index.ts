@@ -14,6 +14,7 @@ import { parseEnv, type Env } from './env.js';
  */
 function loadDotEnv(): void {
   if (process.env.NODE_ENV === 'production') return;
+  if (process.env.NODE_ENV === 'test') return; // tests set their own vars via setupFiles
   if (typeof process.loadEnvFile !== 'function') return;
   try {
     process.loadEnvFile();

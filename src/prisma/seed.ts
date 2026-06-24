@@ -4,7 +4,9 @@
 // (a demo workspace/project/states/issues) is the Phase 4 "Seed data" task.
 // Kept as a working no-op so the `prisma db seed` hook resolves cleanly.
 
-import { prisma } from '../lib/prisma.js';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
   // Intentionally empty until the Phase 1 schema lands.

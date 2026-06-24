@@ -15,6 +15,15 @@ import { config, isDev } from './config/index.js';
 import errorHandlerPlugin from './plugins/error-handler.js';
 import swaggerPlugin from './plugins/swagger.js';
 import prismaPlugin from './plugins/prisma.js';
+import authPlugin from './plugins/auth-hook.js';
+import workspacePlugin from './plugins/workspace-hook.js';
+import { authRoutes } from './modules/auth/routes.js';
+import { workspaceRoutes } from './modules/workspaces/routes.js';
+import { projectRoutes } from './modules/projects/routes.js';
+import { stateRoutes } from './modules/states/routes.js';
+import { labelRoutes } from './modules/labels/routes.js';
+import { issueRoutes } from './modules/issues/routes.js';
+import { commentRoutes } from './modules/comments/routes.js';
 
 export interface BuildAppOptions {
   /** Pino logger options, or `false`/`true` to disable/enable the default logger. */
@@ -63,6 +72,8 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
   await app.register(errorHandlerPlugin);
   await app.register(swaggerPlugin);
   await app.register(prismaPlugin);
+  await app.register(authPlugin);
+  await app.register(workspacePlugin);
 
   // --- Routes ----------------------------------------------------------------
   // Liveness/readiness probe. Liveness always returns ok if the process is up;
@@ -78,7 +89,22 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
     }
   });
 
-  // Feature modules register under `/api/v1` starting in Phase 1.
+  // Feature modules under /api/v1
+  await app.register(authRoutes, { prefix: '/api/v1/auth' });
+  await app.register(workspaceRoutes, { prefix: '/api/v1/workspaces' });
+  await app.register(projectRoutes, { prefix: '/api/v1/workspaces/:workspaceSlug/projects' });
+  await app.register(stateRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/states',
+  });
+  await app.register(labelRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/labels',
+  });
+  await app.register(issueRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/issues',
+  });
+  await app.register(commentRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/issues/:issueId/comments',
+  });
 
   return app;
 }

@@ -6,9 +6,9 @@
 
 ## Current Status
 
-- **Current Phase:** Phase 1 — MVP Core (Phase 0 complete)
+- **Current Phase:** Phase 2 — Agile machinery (Phase 1 complete)
 - **Last Session:** 2026-06-24
-- **Next Task:** Phase 1 → Prisma schema (User, Workspace, WorkspaceMember, Project, ProjectMember, State, Issue, IssueAssignee, Label, IssueLabel, Comment) + first migration
+- **Next Task:** Phase 2 → Cycles module — CRUD + add/remove issues + progress summary
 
 ---
 
@@ -38,17 +38,17 @@ These lock the TZ §12 open questions (per `CLAUDE.md`). Do not re-litigate duri
 
 ## Phase 1 — MVP Core (launchable)
 
-- [ ] Prisma schema: User, Workspace, WorkspaceMember, Project, ProjectMember, State, Issue, IssueAssignee, Label, IssueLabel, Comment + first migration
-- [ ] Auth module — register, login, refresh (rotating), logout, `GET/PATCH /auth/me`; JWT access (~15m) + refresh tokens; argon2 hashing
-- [ ] Auth hook plugin (Bearer → user) + workspace membership/permission resolver hook
-- [ ] Workspaces module — CRUD + members (list/add/change-role/remove); creator → owner
-- [ ] Projects module — CRUD + members; seed default States on create
-- [ ] States module — list/create/update/delete (reassign issues on delete)
-- [ ] Labels module — project-scoped CRUD
-- [ ] Issues module — CRUD (title, state, priority, assignees, dates, sub-issues), assignees/labels attach-detach
-- [ ] Comments module — CRUD (markdown, soft-delete, edit/delete own or admin)
-- [ ] Issue list — basic filtering (`state[]`, `priority[]`, `assignee[]`, `label[]`, `search`, AND semantics) + cursor pagination
-- [ ] Integration tests: auth flow + multi-tenant isolation (no cross-workspace access)
+- [x] Prisma schema: User, Workspace, WorkspaceMember, Project, ProjectMember, State, Issue, IssueAssignee, Label, IssueLabel, Comment + first migration
+- [x] Auth module — register, login, refresh (rotating), logout, `GET/PATCH /auth/me`; JWT access (~15m) + refresh tokens; argon2 hashing
+- [x] Auth hook plugin (Bearer → user) + workspace membership/permission resolver hook
+- [x] Workspaces module — CRUD + members (list/add/change-role/remove); creator → owner
+- [x] Projects module — CRUD + members; seed default States on create
+- [x] States module — list/create/update/delete (reassign issues on delete)
+- [x] Labels module — project-scoped CRUD
+- [x] Issues module — CRUD (title, state, priority, assignees, dates, sub-issues), assignees/labels attach-detach
+- [x] Comments module — CRUD (markdown, soft-delete, edit/delete own or admin)
+- [x] Issue list — basic filtering (`state[]`, `priority[]`, `assignee[]`, `label[]`, `search`, AND semantics) + cursor pagination
+- [x] Integration tests: auth flow + multi-tenant isolation (no cross-workspace access)
 
 ## Phase 2 — Agile machinery
 
