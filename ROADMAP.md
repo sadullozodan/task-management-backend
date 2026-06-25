@@ -8,7 +8,7 @@
 
 - **Current Phase:** Phase 2 — Agile machinery (Phase 1 complete)
 - **Last Session:** 2026-06-25
-- **Next Task:** Phase 2 → Modules module — CRUD + add/remove issues (many-to-many) + progress
+- **Next Task:** Phase 2 → Issue links/relations — `blocks | blocked_by | relates_to | duplicates`
 
 ---
 
@@ -53,7 +53,7 @@ These lock the TZ §12 open questions (per `CLAUDE.md`). Do not re-litigate duri
 ## Phase 2 — Agile machinery
 
 - [x] Cycles module — CRUD + add/remove issues + progress summary
-- [ ] Modules module — CRUD + add/remove issues (many-to-many) + progress
+- [x] Modules module — CRUD + add/remove issues (many-to-many) + progress
 - [ ] Issue links/relations — `blocks | blocked_by | relates_to | duplicates`
 - [ ] Full filtering + sorting (`sort_by`/`order`) + grouping (`group_by`) on issue list
 - [ ] Activity log — audit trail powering issue history feed

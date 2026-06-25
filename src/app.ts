@@ -25,6 +25,7 @@ import { labelRoutes } from './modules/labels/routes.js';
 import { issueRoutes } from './modules/issues/routes.js';
 import { commentRoutes } from './modules/comments/routes.js';
 import { cycleRoutes } from './modules/cycles/routes.js';
+import { moduleRoutes } from './modules/modules/routes.js';
 
 export interface BuildAppOptions {
   /** Pino logger options, or `false`/`true` to disable/enable the default logger. */
@@ -108,6 +109,9 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
   });
   await app.register(cycleRoutes, {
     prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/cycles',
+  });
+  await app.register(moduleRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/modules',
   });
 
   return app;
