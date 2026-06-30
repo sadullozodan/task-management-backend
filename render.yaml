@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: task-management-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 3000
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_URL
+        fromDatabase:
+          name: task_manegment
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_TTL
+        value: 15m
+      - key: JWT_REFRESH_TTL
+        value: 7d
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: STORAGE_DRIVER
+        value: local
+      - key: STORAGE_PRESIGN_TTL
+        value: 900
+      - key: PUBLIC_BASE_URL
+        value: https://task-management-api.onrender.com
+      - key: ATTACHMENT_MAX_BYTES
+        value: 26214400
+      - key: LOCAL_STORAGE_DIR
+        value: ./uploads
+      - key: PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING
+        value: "1"
+
+databases:
+  - name: task_manegment
+    plan: free
