@@ -10,7 +10,9 @@ WORKDIR /app
 # OpenSSL is required by Prisma's query engine.
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
-RUN npm ci
+# --include=dev forces devDependencies (typescript, @types/node) even if the
+# build environment sets NODE_ENV=production — tsc needs them to compile.
+RUN npm ci --include=dev
 
 # --- build -------------------------------------------------------------------
 FROM deps AS build
