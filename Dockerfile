@@ -10,9 +10,10 @@ WORKDIR /app
 # OpenSSL is required by Prisma's query engine.
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
-# --include=dev forces devDependencies (typescript, @types/node) even if the
-# build environment sets NODE_ENV=production — tsc needs them to compile.
-RUN npm ci --include=dev
+# `npm install` (not `npm ci`) so a lock file generated on a different platform
+# (e.g. Windows) tolerates Linux-only optional deps like @emnapi/*. --include=dev
+# forces devDependencies (typescript, @types/node) even under NODE_ENV=production.
+RUN npm install --include=dev
 
 # --- build -------------------------------------------------------------------
 FROM deps AS build
@@ -27,7 +28,7 @@ ENV NODE_ENV=production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Compiled app + generated Prisma client + schema (needed for migrate deploy).
 COPY --from=build /app/dist ./dist
