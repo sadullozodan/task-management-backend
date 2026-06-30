@@ -1,3 +1,7 @@
+# Render Blueprint — Docker web service.
+# Reuses the EXISTING Render PostgreSQL database (already migrated), so no
+# `databases:` block here. DATABASE_URL is entered manually (sync: false) — paste
+# the database's *Internal Database URL* when Render prompts during Blueprint apply.
 services:
   - type: web
     name: task-management-api
@@ -5,6 +9,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: free
+    region: oregon
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -15,10 +20,9 @@ services:
         value: 3000
       - key: LOG_LEVEL
         value: info
+      # Paste the EXISTING database's Internal Database URL here in the dashboard.
       - key: DATABASE_URL
-        fromDatabase:
-          name: task_manegment
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -39,9 +43,3 @@ services:
         value: 26214400
       - key: LOCAL_STORAGE_DIR
         value: ./uploads
-      - key: PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING
-        value: "1"
-
-databases:
-  - name: task_manegment
-    plan: free
