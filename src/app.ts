@@ -30,6 +30,8 @@ import { moduleRoutes } from './modules/modules/routes.js';
 import { issueRelationRoutes } from './modules/issues/relations/routes.js';
 import { activityRoutes } from './modules/activity/routes.js';
 import { attachmentRoutes, attachmentDeleteRoutes } from './modules/attachments/routes.js';
+import { notificationRoutes } from './modules/notifications/routes.js';
+import { inviteRoutes } from './modules/invites/routes.js';
 
 export interface BuildAppOptions {
   /** Pino logger options, or `false`/`true` to disable/enable the default logger. */
@@ -130,6 +132,10 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
   await app.register(attachmentDeleteRoutes, {
     prefix: '/api/v1/workspaces/:workspaceSlug/projects/:projectId/attachments',
   });
+  await app.register(notificationRoutes, {
+    prefix: '/api/v1/workspaces/:workspaceSlug/notifications',
+  });
+  await app.register(inviteRoutes, { prefix: '/api/v1/invites' });
 
   return app;
 }
