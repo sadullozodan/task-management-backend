@@ -7,7 +7,13 @@ export const RegisterBodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   display_name: z.string().min(1).max(100),
-  invite_token: z.string().uuid().optional(),
+  // Clients (e.g. HTML forms) often send an empty string when the user leaves
+  // the invite field blank. Treat "" / whitespace as "no invite" so a normal
+  // first-time signup succeeds; a non-empty value must still be a valid UUID.
+  invite_token: z.preprocess(
+    (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+    z.string().uuid().optional(),
+  ),
 });
 
 export const LoginBodySchema = z.object({
@@ -63,7 +69,10 @@ export const registerRouteSchema: FastifySchema = {
       email: { type: 'string', format: 'email' },
       password: { type: 'string', minLength: 8 },
       display_name: { type: 'string', minLength: 1, maxLength: 100 },
-      invite_token: { type: 'string', format: 'uuid' },
+      // No `format: uuid` here so an empty string from a form isn't rejected at
+      // the Fastify layer — the Zod schema normalizes "" to "no invite" and
+      // still enforces UUID format for any real token.
+      invite_token: { type: 'string' },
     },
   },
   response: {
