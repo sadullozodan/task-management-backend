@@ -92,13 +92,6 @@ export const envSchema = z
       .transform((v) => v === 'true'),
   })
   .superRefine((env, ctx) => {
-    if (env.NODE_ENV === 'production' && !env.SMTP_HOST) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['SMTP_HOST'],
-        message: 'SMTP_HOST is required in production so invites/chat requests can be emailed',
-      });
-    }
     if (env.STORAGE_DRIVER === 's3') {
       for (const key of ['S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY'] as const) {
         if (!env[key]) {
