@@ -32,6 +32,7 @@ import { activityRoutes } from './modules/activity/routes.js';
 import { attachmentRoutes, attachmentDeleteRoutes } from './modules/attachments/routes.js';
 import { notificationRoutes } from './modules/notifications/routes.js';
 import { inviteRoutes } from './modules/invites/routes.js';
+import { chatRoutes } from './modules/chats/routes.js';
 
 export interface BuildAppOptions {
   /** Pino logger options, or `false`/`true` to disable/enable the default logger. */
@@ -136,6 +137,7 @@ export async function buildApp(opts: BuildAppOptions = {}): Promise<FastifyInsta
     prefix: '/api/v1/workspaces/:workspaceSlug/notifications',
   });
   await app.register(inviteRoutes, { prefix: '/api/v1/invites' });
+  await app.register(chatRoutes, { prefix: '/api/v1/workspaces/:workspaceSlug/chats' });
 
   return app;
 }

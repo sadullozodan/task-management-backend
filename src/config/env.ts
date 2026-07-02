@@ -42,6 +42,23 @@ export const envSchema = z
     // --- CORS --- (comma-separated origins, or `*`; configured per environment)
     CORS_ORIGIN: z.string().min(1).default('*'),
 
+    // --- Email / SMTP ---
+    // Outbound transactional email (workspace invites, chat requests). In
+    // development/test these are optional and messages are logged to stdout;
+    // in production the transport is required (enforced by the superRefine
+    // below) so invites/chat requests actually get delivered. Works with any
+    // SMTP provider (Resend, SendGrid, Mailgun, Gmail app-password, etc.).
+    SMTP_HOST: z.string().min(1).optional(),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+    SMTP_SECURE: z
+      .enum(['true', 'false'])
+      .default('false')
+      .transform((v) => v === 'true'),
+    SMTP_USER: z.string().min(1).optional(),
+    SMTP_PASS: z.string().min(1).optional(),
+    /** From header for outbound mail, e.g. `Task Management <no-reply@yourdomain.com>`. */
+    MAIL_FROM: z.string().min(1).default('Task Management <no-reply@example.com>'),
+
     // --- Attachment storage ---
     // `local` (default) stores bytes on disk and serves them through internal API
     // routes; `s3` uses an S3-compatible object store (AWS S3 / MinIO) with
@@ -75,6 +92,13 @@ export const envSchema = z
       .transform((v) => v === 'true'),
   })
   .superRefine((env, ctx) => {
+    if (env.NODE_ENV === 'production' && !env.SMTP_HOST) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['SMTP_HOST'],
+        message: 'SMTP_HOST is required in production so invites/chat requests can be emailed',
+      });
+    }
     if (env.STORAGE_DRIVER === 's3') {
       for (const key of ['S3_BUCKET', 'S3_ACCESS_KEY_ID', 'S3_SECRET_ACCESS_KEY'] as const) {
         if (!env[key]) {
