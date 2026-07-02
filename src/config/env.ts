@@ -43,11 +43,12 @@ export const envSchema = z
     CORS_ORIGIN: z.string().min(1).default('*'),
 
     // --- Email / SMTP ---
-    // Outbound transactional email (workspace invites, chat requests). In
-    // development/test these are optional and messages are logged to stdout;
-    // in production the transport is required (enforced by the superRefine
-    // below) so invites/chat requests actually get delivered. Works with any
-    // SMTP provider (Resend, SendGrid, Mailgun, Gmail app-password, etc.).
+    // Outbound transactional email (workspace invites, chat requests). SMTP is
+    // OPTIONAL in every environment: when SMTP_HOST is unset, messages are logged
+    // to stdout instead of delivered. Email is a best-effort side effect — invites
+    // are created and their link is returned in the API response regardless of
+    // delivery, so the flow works even without a mail provider configured. Works
+    // with any SMTP provider (Resend, SendGrid, Mailgun, Gmail app-password, etc.).
     SMTP_HOST: z.string().min(1).optional(),
     SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
     SMTP_SECURE: z

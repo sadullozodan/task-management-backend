@@ -1,4 +1,5 @@
 import type { PrismaClient, Workspace, WorkspaceMember, WorkspaceInvite } from '@prisma/client';
+import type { FastifyBaseLogger } from 'fastify';
 import { AppError } from '../../lib/errors.js';
 import { sendInviteEmail } from '../../lib/email.js';
 import { config } from '../../config/index.js';
@@ -153,6 +154,7 @@ export async function inviteMember(
   workspaceId: string,
   inviterId: string,
   body: InviteMemberBody,
+  logger?: FastifyBaseLogger,
 ): Promise<WorkspaceInvite> {
   const workspace = await prisma.workspace.findUnique({ where: { id: workspaceId } });
   if (!workspace) throw AppError.notFound('Workspace not found');
@@ -192,14 +194,26 @@ export async function inviteMember(
     },
   });
 
+  // Deliver the invite email as a best-effort side effect: the invite already
+  // exists in the DB and its token/link is returned in the response, so a failure
+  // in the email service (SMTP down, bad credentials, provider rejection) must NOT
+  // fail the request — otherwise a working invite would surface as a 500 to the
+  // client. We log the failure and let the caller share the link manually.
   const inviteUrl = `${config.PUBLIC_BASE_URL}/invites/${invite.token}`;
-  await sendInviteEmail({
-    to: body.email,
-    workspaceName: workspace.name,
-    inviterName: inviter.display_name,
-    inviteUrl,
-    expiresAt,
-  });
+  try {
+    await sendInviteEmail({
+      to: body.email,
+      workspaceName: workspace.name,
+      inviterName: inviter.display_name,
+      inviteUrl,
+      expiresAt,
+    });
+  } catch (err) {
+    logger?.warn(
+      { err, email: body.email, workspaceId, inviteId: invite.id },
+      'invite created but email delivery failed; the invite link is still valid',
+    );
+  }
 
   return invite;
 }

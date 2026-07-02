@@ -119,6 +119,7 @@ export async function inviteMemberHandler(
     request.workspace.id,
     request.userId,
     body,
+    request.log,
   );
   reply.code(201).send(invite);
 }
